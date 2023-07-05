@@ -4,6 +4,7 @@ import os
 import shutil
 from datetime import datetime
 from pathlib import Path
+import matplotlib.pyplot as plt
 
 import tensorflow as tf
 # import tensorflow_addons as tfa
@@ -74,7 +75,7 @@ def formatted_datetime():
 # Define the DNN model
 def create_model():
     model = tf.keras.Sequential([
-        tf.keras.layers.Dense(64, activation='relu', input_shape=(784,)),
+        tf.keras.layers.Dense(128, activation='relu', input_shape=(784,)),
         tf.keras.layers.Dense(64, activation='relu'),
         tf.keras.layers.Dense(10, activation='softmax')
     ])
@@ -82,7 +83,7 @@ def create_model():
     # Compile the model
     model.compile(optimizer='adam',
                   loss='categorical_crossentropy',
-                  metrics=['accuracy'])
+                  metrics=['accuracy', tf.keras.metrics.Precision(), tf.keras.metrics.Recall()])
 
     return model
 
@@ -103,6 +104,17 @@ def load_normalized_and_encoded_dataset():
     # Load the MNIST dataset
     (x_train, y_train), (x_test, y_test) = tf.keras.datasets.mnist.load_data()
 
+    # Display some sample images
+    # plt.figure(figsize=(10, 10))
+    # for i in range(25):
+    #     plt.subplot(5, 5, i + 1)
+    #     plt.xticks([])
+    #     plt.yticks([])
+    #     plt.grid(False)
+    #     plt.imshow(x_train[i], cmap=plt.cm.binary)
+    #     plt.xlabel(y_train[i])
+    # plt.show()
+
     # Preprocess the data
     x_train = x_train.reshape(-1, 784).astype('float32') / 255.0
     x_test = x_test.reshape(-1, 784).astype('float32') / 255.0
@@ -110,15 +122,21 @@ def load_normalized_and_encoded_dataset():
     y_train = tf.keras.utils.to_categorical(y_train, 10)
     y_test = tf.keras.utils.to_categorical(y_test, 10)
 
-    return x_train, x_test, y_train, y_test
+    split_index = int(0.8 * len(x_test))
 
-def create_and_fit_dnn_model(save_model_bool=False, model_path_filename="dnn_model", history_path_filename="history", disable_gpu_training=False, batch_size=32, epochs=5):
+    x_test_fit = x_test[split_index:]
+    y_test_fit = y_test[split_index:]
+
+    x_test_eval = x_test[:split_index]
+    y_test_eval = y_test[:split_index]
+
+    return x_train, x_test, y_train, y_test, x_test_fit, y_test_fit, x_test_eval, y_test_eval
+
+def fit_dnn_model(save_model_bool=False, model_path_filename="dnn_model", history_path_filename="history", disable_gpu_training=False, batch_size=32, epochs=5):
     if (disable_gpu_training):
         tf.config.set_visible_devices([], 'GPU')
 
-    x_train, x_test, y_train, y_test = load_normalized_and_encoded_dataset()
-
-    model = create_model()
+    x_train, x_test, y_train, y_test, x_test_fit, y_test_fit, x_test_eval, y_test_eval = load_normalized_and_encoded_dataset()
 
     model.summary()
 
@@ -128,13 +146,15 @@ def create_and_fit_dnn_model(save_model_bool=False, model_path_filename="dnn_mod
     print("epochs: ", epochs)
 
     # Train the model
-    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1)
+    history = model.fit(x_train, y_train, batch_size=batch_size, epochs=epochs, verbose=1, validation_data=(x_test_fit, y_test_fit))
 
     if (save_model_bool):
         print()
 
         now = formatted_datetime()
         save_model(model, history, model_path_filename + "_" + now, history_path_filename)
+
+    return model, history, x_train, x_test, y_train, y_test, x_test_fit, y_test_fit, x_test_eval, y_test_eval
 
 
 if __name__ == "__main__":
@@ -143,29 +163,39 @@ if __name__ == "__main__":
 
     is_gpu_supported()
 
-    save_model_bool = False
+    save_model_bool = True
     model_path_filename = "dnn_model"
     history_path_filename = "history"
     disable_gpu_training = True
     batch_size = 64
-    epochs = 50
+    epochs = 5
+    load_model_bool = True
 
-    create_and_fit_dnn_model(save_model_bool=save_model_bool, model_path_filename=model_path_filename,
-                             history_path_filename=history_path_filename, disable_gpu_training=disable_gpu_training,
-                             batch_size=batch_size, epochs=epochs)
+    if(load_model_bool):
+        model_load_filename = "dnn_model_2023-07-05_15_34_26_749790"
 
-    # # Select a random test sample
-    # sample_idx = np.random.randint(0, len(x_test))
-    # x_sample = x_test[sample_idx:sample_idx + 1]
-    # y_sample = y_test[sample_idx:sample_idx + 1]
+        model, history = load_model(model_load_filename, history_path_filename)
+
+        x_train, x_test, y_train, y_test, x_test_fit, y_test_fit, x_test_eval, y_test_eval = load_normalized_and_encoded_dataset()
+
+    else:
+        model, history, x_train, x_test, y_train, y_test, x_test_fit, y_test_fit, x_test_eval, y_test_eval = \
+            fit_dnn_model(save_model_bool=save_model_bool, model_path_filename=model_path_filename,
+            history_path_filename=history_path_filename, disable_gpu_training=disable_gpu_training,
+            batch_size=batch_size, epochs=epochs)
+
+    # Select a random test sample
+    sample_idx = np.random.randint(0, len(x_test_eval))
+    x_sample = x_test_eval[sample_idx:sample_idx + 1]
+    y_sample = y_test_eval[sample_idx:sample_idx + 1]
     #
-    # # Generate adversarial example for the selected sample
+    # Generate adversarial example for the selected sample
     # x_adv_sample = generate_adversarial_examples(model, x_sample, y_sample)
     #
     # # Evaluate the model on the adversarial example
     # _, acc = model.evaluate(x_adv_sample, y_sample)
     # print(f'Accuracy on adversarial example: {acc}')
     #
-    # # Evaluate the model on the original sample
-    # _, acc = model.evaluate(x_sample, y_sample)
-    # print(f'Accuracy on original sample: {acc}')
+    # Evaluate the model on the original sample
+    acc = model.evaluate(x_sample, y_sample)
+    print(f'Accuracy on original sample: {acc}')
