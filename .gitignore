@@ -1,0 +1,18 @@
+# Python files to ignore
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.py[a-z]
+*.py[co]
+*.egg-info/
+dist/
+build/
+*.egg
+
+# PyCharm files to ignore
+.idea/
+*.iml
+
+# macOS files to ignore
+.DS_Store
