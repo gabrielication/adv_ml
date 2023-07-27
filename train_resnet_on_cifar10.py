@@ -34,7 +34,7 @@ def choose_gpu(gpu_id=0):
 
     if gpus:
         try:
-            # Restrict TensorFlow to only use the GPU with index 1
+            # Restrict TensorFlow to only use the GPU with index=gpu_id
             tf.config.experimental.set_visible_devices(gpus[gpu_id], 'GPU')
             logical_gpus = tf.config.experimental.list_logical_devices('GPU')
             print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPU")

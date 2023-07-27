@@ -1,0 +1,1 @@
+cat resnet50_cifar10_weights.zip.part-* > out.zip
