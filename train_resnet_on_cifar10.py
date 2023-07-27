@@ -24,6 +24,7 @@ useful links:
 
 https://colab.research.google.com/github/tensorflow/datasets/blob/master/docs/keras_example.ipynb#scrollTo=XWqxdmS1NLKA
 https://www.kaggle.com/code/kutaykutlu/resnet50-transfer-learning-cifar-10-beginner
+https://stackabuse.com/split-train-test-and-validation-sets-with-tensorflow-datasets-tfds/
 '''
 
 
@@ -132,7 +133,7 @@ def preprocess_img(image, label):
 
 
 def load_cifar10():
-    (ds_train, ds_test), ds_info = tfds.load('cifar10', split=['train', 'test'], shuffle_files=True, with_info=True,
+    (ds_train, ds_val, ds_test), ds_info = tfds.load('cifar10', split=["train[:80%]", "train[80%:]", 'test'], shuffle_files=True, with_info=True,
                                              as_supervised=True)
 
     '''
@@ -143,6 +144,12 @@ def load_cifar10():
     '''
 
     ds_train = ds_train.map(
+        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE)
+
+    ds_val = ds_val.map(
+        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE)
+
+    ds_test = ds_test.map(
         preprocess_img, num_parallel_calls=tf.data.AUTOTUNE)
 
     '''
@@ -157,7 +164,7 @@ def load_cifar10():
     tf.data.Dataset.prefetch: It is good practice to end the pipeline by prefetching for performance.
     '''
     ds_train = ds_train.cache()
-    ds_train = ds_train.shuffle(ds_info.splits['train'].num_examples)
+    ds_train = ds_train.shuffle(ds_info.splits['train[:80%]'].num_examples)
     ds_train = ds_train.batch(128)
     ds_train = ds_train.prefetch(tf.data.AUTOTUNE)
 
@@ -167,13 +174,15 @@ def load_cifar10():
     Caching is done after batching because batches can be the same between epochs.
     '''
 
-    ds_test = ds_test.map(
-        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE)
+    ds_val = ds_val.batch(128)
+    ds_val = ds_val.cache()
+    ds_val = ds_val.prefetch(tf.data.AUTOTUNE)
+
     ds_test = ds_test.batch(128)
     ds_test = ds_test.cache()
     ds_test = ds_test.prefetch(tf.data.AUTOTUNE)
 
-    return ds_train, ds_test, ds_info
+    return ds_train, ds_val, ds_test, ds_info
 
 
 def fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True, epochs=5, save_weights=False):
@@ -182,7 +191,7 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
 
     model = load_resnet_model(summary=summary)
 
-    ds_train, ds_test, ds_info = load_cifar10()
+    ds_train, ds_val, ds_test, ds_info = load_cifar10()
 
     # Create EarlyStopping callback
     early_stopping = EarlyStopping(
@@ -197,12 +206,20 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
     history = model.fit(
         ds_train,
         epochs=epochs,
-        validation_data=ds_test,
+        validation_data=ds_val,
         callbacks=[early_stopping]
     )
 
     save_model(model, history, model_path_filename, history_path_filename, save_weights=save_weights)
 
+    return model, history, ds_test
+
+def evaluate_model_after_training(model, ds_test):
+
+    print("\nEvaluating model...")
+    test_loss, test_accuracy = model.evaluate(ds_test)
+    print(f"Test Loss: {test_loss}")
+    print(f"Test Accuracy: {test_accuracy}")
 
 if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
@@ -213,11 +230,13 @@ if __name__ == "__main__":
 
     epochs = 100
 
-    gpu_id = 2
+    gpu_id = 0
 
     save_weights = False
 
     choose_gpu(gpu_id=gpu_id)
 
-    fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True,
+    model, history, ds_test = fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True,
                               epochs=epochs, save_weights=save_weights)
+
+    evaluate_model_after_training(model, ds_test)
