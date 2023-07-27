@@ -101,12 +101,18 @@ def load_resnet_model(summary=False, include_top=False, weights="imagenet", mode
     return model
 
 
-def save_model(model, history, model_path_filename, history_path_filename):
+def save_model(model, history, model_path_filename, history_path_filename, save_weights=False):
     now = formatted_datetime()
 
     model_path_filename = model_path_filename + "_" + now
 
-    model.save(model_path_filename)
+    if(save_weights):
+        #saving nested models can cause problems, i.e., crashing at save phase
+        #save model's weights instead. downside of this method is that you will
+        #have to define the model architecture again before loading the weights
+        model.save_weights(model_path_filename)
+    else:
+        model.save(model_path_filename)
 
     history_complete_path = model_path_filename + '/' + history_path_filename + '.npy'
 
@@ -170,8 +176,9 @@ def load_cifar10():
     return ds_train, ds_test, ds_info
 
 
-def fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True, epochs=5):
+def fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True, epochs=5, save_weights=False):
     print("epochs: ", epochs)
+    print("save_weights: ",save_weights)
 
     model = load_resnet_model(summary=summary)
 
@@ -194,7 +201,7 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
         callbacks=[early_stopping]
     )
 
-    save_model(model, history, model_path_filename, history_path_filename)
+    save_model(model, history, model_path_filename, history_path_filename, save_weights=save_weights)
 
 
 if __name__ == "__main__":
@@ -206,8 +213,11 @@ if __name__ == "__main__":
 
     epochs = 100
 
-    gpu_id = 0
+    gpu_id = 2
+
+    save_weights = False
 
     choose_gpu(gpu_id=gpu_id)
 
-    fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True, epochs=epochs)
+    fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True,
+                              epochs=epochs, save_weights=save_weights)
