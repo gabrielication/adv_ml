@@ -1,16 +1,8 @@
-import numpy as np
-import pandas as pd
-import os
-from datetime import datetime
-import matplotlib.pyplot as plt
-import pickle
+from util import *
 
-import tensorflow as tf
 from tensorflow.keras.applications.resnet50 import ResNet50, decode_predictions, preprocess_input
 from tensorflow.keras import layers, models, optimizers
 from tensorflow.keras.callbacks import EarlyStopping
-
-import tensorflow_datasets as tfds
 
 '''
 useful links:
@@ -20,32 +12,6 @@ https://www.kaggle.com/code/kutaykutlu/resnet50-transfer-learning-cifar-10-begin
 https://stackabuse.com/split-train-test-and-validation-sets-with-tensorflow-datasets-tfds/
 https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/eager/benchmarks/resnet50/resnet50.py
 '''
-
-def choose_gpu(gpu_id=0):
-    # List all available GPUs
-    gpus = tf.config.experimental.list_physical_devices('GPU')
-
-    if gpus:
-        try:
-            # Restrict TensorFlow to only use the GPU with index=gpu_id
-            tf.config.experimental.set_visible_devices(gpus[gpu_id], 'GPU')
-            logical_gpus = tf.config.experimental.list_logical_devices('GPU')
-            print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPU")
-            print("GPU " + str(gpu_id) + " selected")
-        except RuntimeError as e:
-            # Visible devices must be set before GPUs have been initialized
-            print(e)
-
-
-def formatted_datetime():
-    # current date and time
-    now = str(datetime.now())
-    now = now.replace(" ", "_")
-    now = now.replace(".", "_")
-    now = now.replace(":", "_")
-
-    return now
-
 
 # Preprocessing function
 def preprocess_img(image, label):
@@ -183,27 +149,6 @@ def evaluate_model_after_training(model, ds_test):
     print(f"Test Accuracy: {test_accuracy}")
 
 
-def save_model(model, history, model_path_filename, history_path_filename, save_weights=False):
-    now = formatted_datetime()
-
-    model_path_filename = model_path_filename + "_" + now
-
-    if (save_weights):
-        # saving nested models can cause problems, i.e., crashing at save phase
-        # save model's weights instead. downside of this method is that you will
-        # have to define the model architecture again before loading the weights
-        model.save_weights(model_path_filename)
-    else:
-        model.save(model_path_filename)
-
-    history_complete_path = model_path_filename + '/' + history_path_filename + '.npy'
-
-    np.save(history_complete_path, history.history)
-
-    print("Model saved to: " + model_path_filename)
-    print("Training History saved to: " + history_complete_path)
-
-
 def fit_resnet_and_save_model(model_path_filename, history_path_filename, summary=True, epochs=5, save_weights=False,
                               base_model_trainable=True):
     print("epochs: ", epochs)
@@ -244,7 +189,7 @@ if __name__ == "__main__":
 
     epochs = 100
 
-    gpu_id = 2
+    gpu_id = 0
 
     save_weights = False
 
