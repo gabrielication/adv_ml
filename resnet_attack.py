@@ -1,7 +1,7 @@
 from util import *
 from tensorflow.keras.applications.resnet50 import ResNet50, decode_predictions, preprocess_input
 
-from cleverhans.tf2.attacks.carlini_wagner_l2 import carlini_wagner_l2
+from fix_cw_l2 import carlini_wagner_l2
 
 # Preprocessing function
 def preprocess_img(image, label):
