@@ -25,6 +25,7 @@ useful links:
 https://colab.research.google.com/github/tensorflow/datasets/blob/master/docs/keras_example.ipynb#scrollTo=XWqxdmS1NLKA
 https://www.kaggle.com/code/kutaykutlu/resnet50-transfer-learning-cifar-10-beginner
 https://stackabuse.com/split-train-test-and-validation-sets-with-tensorflow-datasets-tfds/
+https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/eager/benchmarks/resnet50/resnet50.py
 '''
 
 
@@ -83,7 +84,6 @@ def load_resnet_model(summary=False, include_top=False, weights="imagenet", mode
     model = models.Sequential()
     model.add(base_model)
     model.add(layers.Flatten())
-    model.add(layers.Dense(256, activation='relu'))
     model.add(layers.Dense(10))
 
     if (summary):
