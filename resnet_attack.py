@@ -1,5 +1,4 @@
 from util import *
-from tensorflow.keras.applications.resnet50 import ResNet50, decode_predictions, preprocess_input
 
 from fix_cw_l2 import carlini_wagner_l2
 
@@ -7,7 +6,7 @@ from fix_cw_l2 import carlini_wagner_l2
 def preprocess_img(image, label):
     image = tf.cast(image, tf.float32)
     image = tf.image.resize(image, (224, 224))
-    image /= 255.0  # normalize to [0,1] range
+    image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
     return image, label
 
 def filter_by_class(target_class_idx):
@@ -40,13 +39,13 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename, target_c
     # Evaluate on clean and adversarial data
 
     for x, y in ds:
-        print("pred")
-        y_pred = model(x)
-        test_acc_clean(y, y_pred)
-
-        # BUG!!!! https://github.com/cleverhans-lab/cleverhans/issues/1205#issuecomment-1028411235
+        # print("pred")
+        # y_pred = model(x)
+        # test_acc_clean(y, y_pred)
+        #
+        # # BUG!!!! https://github.com/cleverhans-lab/cleverhans/issues/1205#issuecomment-1028411235
         print("cw")
-        x_cw = carlini_wagner_l2(model, x)
+        x_cw = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0)
         y_pred_fgm = model(x_cw)
         test_acc_cw(y, y_pred_fgm)
 
