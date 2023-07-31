@@ -15,6 +15,11 @@ https://github.com/tensorflow/tensorflow/blob/master/tensorflow/python/eager/ben
 
 # Preprocessing function
 def preprocess_img(image, label):
+    '''
+    https://www.tensorflow.org/api_docs/python/tf/keras/applications/mobilenet_v2/preprocess_input
+    MobileNet is the only that normalizes pixels in a certain range, i.e., [-1,1]
+    ResNet does a caffe preprocessing which is much more complicated to attack
+    '''
     image = tf.cast(image, tf.float32)
     image = tf.image.resize(image, (224, 224))
     image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
@@ -22,7 +27,7 @@ def preprocess_img(image, label):
     return image, label
 
 
-def load_resnet_model(summary=False, include_top=False, weights="imagenet", model_trainable=True):
+def load_mobilenet_model(summary=False, include_top=False, weights="imagenet", model_trainable=True):
     print("weights: ", weights)
     print("include_top: ", include_top)
     print("model_trainable: ", model_trainable)
@@ -155,7 +160,7 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
     print("epochs: ", epochs)
     print("save_weights: ", save_weights)
 
-    model = load_resnet_model(summary=summary, model_trainable=base_model_trainable)
+    model = load_mobilenet_model(summary=summary, model_trainable=base_model_trainable)
 
     ds_train, ds_val, ds_test, ds_info = load_imagenette()
 
