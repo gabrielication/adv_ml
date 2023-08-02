@@ -4,9 +4,80 @@ from fix_cw_l2 import carlini_wagner_l2
 
 decode_predictions = tf.keras.applications.mobilenet_v2.decode_predictions
 
+imagenette_labels = {
+    0: 'tench',
+    1: 'English springer spaniel',
+    2: 'cassette player',
+    3: 'chainsaw',
+    4: 'church',
+    5: 'French horn',
+    6: 'garbage truck',
+    7: 'gas pump',
+    8: 'golf ball',
+    9: 'parachute',
+}
+
 # Helper function to extract labels from probability vector
 def get_imagenet_label(probs):
   return decode_predictions(probs, top=1)[0][0]
+
+def calculate_l_norm(og_img, adv_img):
+    # Compute difference
+    diff = tf.abs(og_img - adv_img)
+
+    # L0 norm: count of non-zero elements (number of changed pixels)
+    L0_norm = tf.reduce_sum(tf.cast(tf.greater(diff, 0), tf.float32))
+    print("L0 norm:", L0_norm.numpy())
+
+    # L1 norm: sum of absolute differences (total amount of change)
+    L1_norm = tf.norm(diff, ord=1)
+    print("L1 norm:", L1_norm.numpy())
+
+    # L2 norm: Euclidean distance (geometric distance in the image space)
+    L2_norm = tf.norm(diff, ord=2)
+    print("L2 norm:", L2_norm.numpy())
+
+    # Infinity norm: maximum absolute difference (largest change to any pixel)
+    Linf_norm = tf.norm(diff, np.inf)
+    print("Infinity norm:", Linf_norm.numpy())
+
+    return L0_norm, L1_norm, L2_norm, Linf_norm
+
+def calculate_distance_between_two_sample_imgs(ds):
+    # Take two images from the dataset
+    dataset_iter = iter(ds)
+    image1 = next(dataset_iter)[0]
+    image2 = next(dataset_iter)[0]
+
+    image1, label1 = preprocess_img(image1, None)
+    image2, label2 = preprocess_img(image2, None)
+
+    L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(image1, image2)
+
+    print(L0_norm, L1_norm, L2_norm, Linf_norm)
+
+def one_hot_encode_int_label(x, target_class, depth=10):
+    # We have to one-hot encode the label. The depth is the size of the vector
+    # We have 10 classes in Imagenette then depth = 10
+    batch_size = x.shape[0]  # assuming x is the batch of images
+    target_one_hot_enc = tf.one_hot(target_class, depth=depth)
+    target_one_hot_enc = tf.repeat(target_one_hot_enc[None, :], batch_size, axis=0)
+
+    return target_one_hot_enc
+
+def calculate_probabilities_from_logits(y_pred):
+    # Use the softmax function to convert logits to probabilities
+    probabilities = tf.nn.softmax(y_pred)
+
+    # Change the print options
+    np.set_printoptions(precision=4, suppress=True)
+
+    # Get the index of the maximum probability
+    index_max_prob = tf.argmax(probabilities[0])
+
+    index_max_prob = index_max_prob.numpy()
+
+    return probabilities, index_max_prob
 
 # Preprocessing function
 def preprocess_img(image, label):
@@ -14,51 +85,58 @@ def preprocess_img(image, label):
     image = tf.image.resize(image, (224, 224))
     image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
     return image, label
-def make_cw_targeted_attack(model_path_filename, history_path_filename, target_class, one_hot_depth=1000):
-    base_model = tf.keras.applications.MobileNetV2(include_top=True, weights="imagenet", input_shape=(224, 224, 3))
-    base_model.trainable = False
+def make_cw_targeted_attack(model_path_filename, history_path_filename):
+    global imagenette_labels
 
-    model = base_model
+    model, history = load_model(model_path_filename, history_path_filename)
 
     # Loading the imagenette dataset
-    ds = tfds.load('imagenette/320px', split='validation', as_supervised=True)
+    ds, info = tfds.load('imagenette/320px', with_info=True, split='validation', as_supervised=True)
+
+    calculate_distance_between_two_sample_imgs(ds)
+
+    exit()
 
     # Preprocess the dataset
     ds = ds.map(
         preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(1)
 
-    # We have to one-hot encode the label. The depth is the size of the vector
-    # We have 10 classes in Imagenette then depth = 10
+    # test_acc_clean = tf.metrics.SparseCategoricalAccuracy()
+    # test_acc_cw = tf.metrics.SparseCategoricalAccuracy()
 
-    test_acc_clean = tf.metrics.SparseCategoricalAccuracy()
-    test_acc_cw = tf.metrics.SparseCategoricalAccuracy()
+    keysList = list(imagenette_labels.keys())
+    print(keysList)
 
-    for x, y in ds:
-        print("pred")
-        y_pred = model(x)
-        test_acc_clean(y, y_pred)
+    for x,y in ds:
+        for target_class in keysList:
 
-        _, image_class, class_confidence = get_imagenet_label(y_pred.numpy())
+            ogl_target = y[0].numpy().item()
+            adv_target = target_class
 
-        print(image_class, class_confidence)
+            target_one_hot_enc = one_hot_encode_int_label(x, target_class)
 
-        batch_size = x.shape[0]  # assuming x is the batch of images
-        target_one_hot_enc = tf.one_hot(target_class, depth=one_hot_depth)
-        target_one_hot_enc = tf.repeat(target_one_hot_enc[None, :], batch_size, axis=0)
+            print("CW attack in progress. Might take a while...")
+            adv_img_batch = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True, y=target_one_hot_enc)
 
-        # BUG!!!! https://github.com/cleverhans-lab/cleverhans/issues/1205#issuecomment-1028411235
-        print("cw")
-        x_cw = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True, y=target_one_hot_enc)
-        y_pred_fgm = model(x_cw)
+            print("Predicting ogl sample...")
+            y_pred_ogl = model(x)
 
-        _, image_class, class_confidence = get_imagenet_label(y_pred_fgm.numpy())
+            print("Predicting adv sample...")
+            y_pred_adv = model(adv_img_batch)
 
-        print(image_class, class_confidence)
+            ogl_img = x[0]
+            adv_img = adv_img_batch[0]
 
-        test_acc_cw(y, y_pred_fgm)
+            prob_ogl, ogl_pred_target = calculate_probabilities_from_logits(y_pred_ogl)
+            prob_adv, adv_pred_target = calculate_probabilities_from_logits(y_pred_adv)
 
-        break
+            print("ogl_target: ",ogl_target)
+            print("adv_target: ",adv_target)
 
+            print("ogl_pred_target: ", ogl_pred_target)
+            print("adv_pred_target: ", adv_pred_target)
+
+            print(calculate_l_norm(ogl_img, adv_img))
 
 if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
@@ -67,12 +145,17 @@ if __name__ == "__main__":
     model_path_filename = "tf_saved_models/mobilenetv2_imagenette_2023-07-31_16_57_19_444119"
     history_path_filename = "classification_history_model"
 
-    gpu_id = 1
+    gpu_id = 0
 
     choose_gpu(gpu_id=gpu_id)
 
     target_class = 1
 
-    adversarial_images = make_cw_targeted_attack(model_path_filename, history_path_filename, target_class)
+    labels = ["tench", "English springer", "cassette player", "chain saw", "church", "French horn", "garbage truck",
+              "gas pump", "golf ball", "parachute"]
+
+    adversarial_images = make_cw_targeted_attack(model_path_filename, history_path_filename)
+
+
 
     print()
