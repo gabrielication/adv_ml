@@ -143,7 +143,7 @@ def preprocess_img(image, label):
     image = tf.image.resize(image, (224, 224))
     image = tf.keras.applications.mobilenet_v2.preprocess_input(image)
     return image, label
-def make_cw_targeted_attack(model_path_filename, history_path_filename):
+def make_cw_targeted_attack(model_path_filename, history_path_filename, batch_size=32):
     global imagenette_labels
     global l0_norm_dict
     global l1_norm_dict
@@ -157,15 +157,14 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
 
     # Preprocess the dataset
     ds = ds.map(
-        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(1)
+        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
 
     keysList = list(imagenette_labels.keys())
-    print(keysList)
 
     for x,y in ds:
         for target_class in keysList:
 
-            ogl_target = y[0].numpy().item()
+            ogl_target = y.numpy()
             adv_target = target_class
 
             target_one_hot_enc = one_hot_encode_int_label(x, target_class)
@@ -173,47 +172,63 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
             print("CW attack in progress. Might take a while...")
             adv_img_batch = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True, y=target_one_hot_enc)
 
-            ogl_img = x[0]
-            adv_img = adv_img_batch[0]
-            # TEST ONLY:
-            # adv_img = ogl_img
+            for i in range(x.shape[0]):
+                ogl_img = x[i]
+                adv_img = adv_img_batch[i]
+                # TEST ONLY:
+                # adv_img = ogl_img
 
-            L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(ogl_img, adv_img)
+                L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(ogl_img, adv_img)
 
-            '''
-            ln_norm_dict[ogl_target][target_class] represents what happens at the original class
-            ogl_target when we target to attack it and be target_class
-            
-            ln_norm_dict[ogl_target][target_class][0] has the sum of all L0_norms in respect
-            to these classes
-            
-            ln_norm_dict[ogl_target][target_class][1] its a counter of all images for
-            these classes in order to the average later
-            '''
-            l0_old_avg = l0_norm_dict[ogl_target][target_class][0]
-            l1_old_avg = l0_norm_dict[ogl_target][target_class][0]
-            l2_old_avg = l0_norm_dict[ogl_target][target_class][0]
-            linf_old_avg = l0_norm_dict[ogl_target][target_class][0]
+                '''
+                ln_norm_dict[ogl_target][target_class] represents what happens at the original class
+                ogl_target when we target to attack it and be target_class
+                
+                ln_norm_dict[ogl_target][target_class][0] has the sum of all L0_norms in respect
+                to these classes
+                
+                ln_norm_dict[ogl_target][target_class][1] its a counter of all images for
+                these classes in order to the average later
+                '''
+                l0_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
+                l1_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
+                l2_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
+                linf_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
 
-            l0_old_count = l0_norm_dict[ogl_target][target_class][1]
-            l1_old_count = l0_norm_dict[ogl_target][target_class][1]
-            l2_old_count = l0_norm_dict[ogl_target][target_class][1]
-            linf_old_count = l0_norm_dict[ogl_target][target_class][1]
+                l0_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
+                l1_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
+                l2_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
+                linf_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
 
-            l0_new_avg = (l0_old_avg * l0_old_count + L0_norm) / (l0_old_count + 1)
-            l1_new_avg = (l1_old_avg * l1_old_count + L1_norm) / (l1_old_count + 1)
-            l2_new_avg = (l2_old_avg * l2_old_count + L2_norm) / (l2_old_count + 1)
-            linf_new_avg = (linf_old_avg * linf_old_count + Linf_norm) / (linf_old_count + 1)
+                l0_new_avg = (l0_old_avg * l0_old_count + L0_norm) / (l0_old_count + 1)
+                l1_new_avg = (l1_old_avg * l1_old_count + L1_norm) / (l1_old_count + 1)
+                l2_new_avg = (l2_old_avg * l2_old_count + L2_norm) / (l2_old_count + 1)
+                linf_new_avg = (linf_old_avg * linf_old_count + Linf_norm) / (linf_old_count + 1)
 
-            l0_norm_dict[ogl_target][target_class][0] = l0_new_avg
-            l1_norm_dict[ogl_target][target_class][0] = l1_new_avg
-            l2_norm_dict[ogl_target][target_class][0] = l2_new_avg
-            linf_norm_dict[ogl_target][target_class][0] = linf_new_avg
+                l0_norm_dict[ogl_target[i]][target_class][0] = l0_new_avg
+                l1_norm_dict[ogl_target[i]][target_class][0] = l1_new_avg
+                l2_norm_dict[ogl_target[i]][target_class][0] = l2_new_avg
+                linf_norm_dict[ogl_target[i]][target_class][0] = linf_new_avg
 
-            l0_norm_dict[ogl_target][target_class][1] += 1
-            l1_norm_dict[ogl_target][target_class][1] += 1
-            l2_norm_dict[ogl_target][target_class][1] += 1
-            linf_norm_dict[ogl_target][target_class][1] += 1
+                l0_norm_dict[ogl_target[i]][target_class][1] += 1
+                l1_norm_dict[ogl_target[i]][target_class][1] += 1
+                l2_norm_dict[ogl_target[i]][target_class][1] += 1
+                linf_norm_dict[ogl_target[i]][target_class][1] += 1
+
+    # Save to disk
+    with open('l0_norm_dict.pickle', 'wb') as handle:
+        pickle.dump(l0_norm_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open('l1_norm_dict.pickle', 'wb') as handle:
+        pickle.dump(l1_norm_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open('l2_norm_dict.pickle', 'wb') as handle:
+        pickle.dump(l2_norm_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    with open('linf_norm_dict.pickle', 'wb') as handle:
+        pickle.dump(linf_norm_dict, handle, protocol=pickle.HIGHEST_PROTOCOL)
+
+    print(l0_norm_dict)
 
 
 if __name__ == "__main__":
@@ -227,11 +242,8 @@ if __name__ == "__main__":
 
     choose_gpu(gpu_id=gpu_id)
 
-    target_class = 1
+    batch_size = 64
 
-    labels = ["tench", "English springer", "cassette player", "chain saw", "church", "French horn", "garbage truck",
-              "gas pump", "golf ball", "parachute"]
-
-    adversarial_images = make_cw_targeted_attack(model_path_filename, history_path_filename)
+    adversarial_images = make_cw_targeted_attack(model_path_filename, history_path_filename, batch_size=batch_size)
 
     print()
