@@ -175,7 +175,8 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
 
             ogl_img = x[0]
             adv_img = adv_img_batch[0]
-            # TEST ONLY: adv_img = ogl_img
+            # TEST ONLY:
+            # adv_img = ogl_img
 
             L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(ogl_img, adv_img)
 
@@ -189,17 +190,31 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
             ln_norm_dict[ogl_target][target_class][1] its a counter of all images for
             these classes in order to the average later
             '''
-            l0_norm_dict[ogl_target][target_class][0] += L0_norm
-            l1_norm_dict[ogl_target][target_class][0] += L1_norm
-            l2_norm_dict[ogl_target][target_class][0] += L2_norm
-            linf_norm_dict[ogl_target][target_class][0] += Linf_norm
+            l0_old_avg = l0_norm_dict[ogl_target][target_class][0]
+            l1_old_avg = l0_norm_dict[ogl_target][target_class][0]
+            l2_old_avg = l0_norm_dict[ogl_target][target_class][0]
+            linf_old_avg = l0_norm_dict[ogl_target][target_class][0]
+
+            l0_old_count = l0_norm_dict[ogl_target][target_class][1]
+            l1_old_count = l0_norm_dict[ogl_target][target_class][1]
+            l2_old_count = l0_norm_dict[ogl_target][target_class][1]
+            linf_old_count = l0_norm_dict[ogl_target][target_class][1]
+
+            l0_new_avg = (l0_old_avg * l0_old_count + L0_norm) / (l0_old_count + 1)
+            l1_new_avg = (l1_old_avg * l1_old_count + L1_norm) / (l1_old_count + 1)
+            l2_new_avg = (l2_old_avg * l2_old_count + L2_norm) / (l2_old_count + 1)
+            linf_new_avg = (linf_old_avg * linf_old_count + Linf_norm) / (linf_old_count + 1)
+
+            l0_norm_dict[ogl_target][target_class][0] = l0_new_avg
+            l1_norm_dict[ogl_target][target_class][0] = l1_new_avg
+            l2_norm_dict[ogl_target][target_class][0] = l2_new_avg
+            linf_norm_dict[ogl_target][target_class][0] = linf_new_avg
 
             l0_norm_dict[ogl_target][target_class][1] += 1
             l1_norm_dict[ogl_target][target_class][1] += 1
             l2_norm_dict[ogl_target][target_class][1] += 1
             linf_norm_dict[ogl_target][target_class][1] += 1
 
-    print(l0_norm_dict)
 
 if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
