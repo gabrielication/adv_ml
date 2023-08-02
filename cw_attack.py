@@ -17,6 +17,55 @@ imagenette_labels = {
     9: 'parachute',
 }
 
+l0_norm_dict = {
+    0: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    1: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    2: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    3: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    4: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    5: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    6: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    7: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    8: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    9: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+}
+l1_norm_dict = {
+    0: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    1: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    2: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    3: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    4: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    5: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    6: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    7: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    8: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    9: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+}
+l2_norm_dict = {
+    0: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    1: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    2: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    3: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    4: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    5: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    6: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    7: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    8: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    9: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+}
+linf_norm_dict = {
+    0: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    1: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    2: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    3: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    4: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    5: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    6: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    7: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    8: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+    9: [[0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0], [0.0, 0]],
+}
+
 # Helper function to extract labels from probability vector
 def get_imagenet_label(probs):
   return decode_predictions(probs, top=1)[0][0]
@@ -27,23 +76,32 @@ def calculate_l_norm(og_img, adv_img):
 
     # L0 norm: count of non-zero elements (number of changed pixels)
     L0_norm = tf.reduce_sum(tf.cast(tf.greater(diff, 0), tf.float32))
-    print("L0 norm:", L0_norm.numpy())
+    L0_norm = L0_norm.numpy()
+    # print("L0 norm:", L0_norm)
 
     # L1 norm: sum of absolute differences (total amount of change)
     L1_norm = tf.norm(diff, ord=1)
-    print("L1 norm:", L1_norm.numpy())
+    L1_norm = L1_norm.numpy()
+    # print("L1 norm:", L1_norm)
 
     # L2 norm: Euclidean distance (geometric distance in the image space)
     L2_norm = tf.norm(diff, ord=2)
-    print("L2 norm:", L2_norm.numpy())
+    L2_norm = L2_norm.numpy()
+    # print("L2 norm:", L2_norm)
 
     # Infinity norm: maximum absolute difference (largest change to any pixel)
     Linf_norm = tf.norm(diff, np.inf)
-    print("Infinity norm:", Linf_norm.numpy())
+    Linf_norm = Linf_norm.numpy()
+    # print("Infinity norm:", Linf_norm)
 
     return L0_norm, L1_norm, L2_norm, Linf_norm
 
 def calculate_distance_between_two_sample_imgs(ds):
+    global l0_norm_dict
+    global l1_norm_dict
+    global l2_norm_dict
+    global linf_norm_dict
+
     # Take two images from the dataset
     dataset_iter = iter(ds)
     image1 = next(dataset_iter)[0]
@@ -87,22 +145,19 @@ def preprocess_img(image, label):
     return image, label
 def make_cw_targeted_attack(model_path_filename, history_path_filename):
     global imagenette_labels
+    global l0_norm_dict
+    global l1_norm_dict
+    global l2_norm_dict
+    global linf_norm_dict
 
     model, history = load_model(model_path_filename, history_path_filename)
 
     # Loading the imagenette dataset
     ds, info = tfds.load('imagenette/320px', with_info=True, split='validation', as_supervised=True)
 
-    calculate_distance_between_two_sample_imgs(ds)
-
-    exit()
-
     # Preprocess the dataset
     ds = ds.map(
         preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(1)
-
-    # test_acc_clean = tf.metrics.SparseCategoricalAccuracy()
-    # test_acc_cw = tf.metrics.SparseCategoricalAccuracy()
 
     keysList = list(imagenette_labels.keys())
     print(keysList)
@@ -118,25 +173,33 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
             print("CW attack in progress. Might take a while...")
             adv_img_batch = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True, y=target_one_hot_enc)
 
-            print("Predicting ogl sample...")
-            y_pred_ogl = model(x)
-
-            print("Predicting adv sample...")
-            y_pred_adv = model(adv_img_batch)
-
             ogl_img = x[0]
-            adv_img = adv_img_batch[0]
+            # adv_img = adv_img_batch[0]
+            adv_img = ogl_img
 
-            prob_ogl, ogl_pred_target = calculate_probabilities_from_logits(y_pred_ogl)
-            prob_adv, adv_pred_target = calculate_probabilities_from_logits(y_pred_adv)
+            L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(ogl_img, adv_img)
 
-            print("ogl_target: ",ogl_target)
-            print("adv_target: ",adv_target)
+            '''
+            ln_norm_dict[ogl_target][target_class] represents what happens at the original class
+            ogl_target when we target to attack it and be target_class
+            
+            ln_norm_dict[ogl_target][target_class][0] has the sum of all L0_norms in respect
+            to these classes
+            
+            ln_norm_dict[ogl_target][target_class][1] its a counter of all images for
+            these classes in order to the average later
+            '''
+            l0_norm_dict[ogl_target][target_class][0] += L0_norm
+            l1_norm_dict[ogl_target][target_class][0] += L1_norm
+            l2_norm_dict[ogl_target][target_class][0] += L2_norm
+            linf_norm_dict[ogl_target][target_class][0] += Linf_norm
 
-            print("ogl_pred_target: ", ogl_pred_target)
-            print("adv_pred_target: ", adv_pred_target)
+            l0_norm_dict[ogl_target][target_class][1] += 1
+            l1_norm_dict[ogl_target][target_class][1] += 1
+            l2_norm_dict[ogl_target][target_class][1] += 1
+            linf_norm_dict[ogl_target][target_class][1] += 1
 
-            print(calculate_l_norm(ogl_img, adv_img))
+    print(l0_norm_dict)
 
 if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
@@ -155,7 +218,5 @@ if __name__ == "__main__":
               "gas pump", "golf ball", "parachute"]
 
     adversarial_images = make_cw_targeted_attack(model_path_filename, history_path_filename)
-
-
 
     print()
