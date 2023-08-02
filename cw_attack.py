@@ -174,8 +174,8 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename):
             adv_img_batch = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True, y=target_one_hot_enc)
 
             ogl_img = x[0]
-            # adv_img = adv_img_batch[0]
-            adv_img = ogl_img
+            adv_img = adv_img_batch[0]
+            # TEST ONLY: adv_img = ogl_img
 
             L0_norm, L1_norm, L2_norm, Linf_norm = calculate_l_norm(ogl_img, adv_img)
 
