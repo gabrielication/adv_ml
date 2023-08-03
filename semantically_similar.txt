@@ -6,5 +6,5 @@ zebra		340
 tiger		292
 volcano		980
 tramcar		829
-school bus	779
-hard disk	592
+school-bus	779
+hard-disk	592
