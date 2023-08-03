@@ -2,6 +2,19 @@ from util import *
 
 from fix_cw_l2 import carlini_wagner_l2
 
+'''
+useful links:
+
+https://github.com/carlini/nn_robust_attacks/blob/master/l2_attack.py
+
+l2 attack is the most efficient
+
+https://deeplearning.cms.waikato.ac.nz/user-guide/class-maps/IMAGENET/
+https://raw.githubusercontent.com/Jing-Luo/GLUCLSON/master/basics/val.txt
+https://raw.githubusercontent.com/hujie-frank/SENet/master/ILSVRC2017_val.txt
+
+'''
+
 decode_predictions = tf.keras.applications.mobilenet_v2.decode_predictions
 
 imagenette_labels = {
