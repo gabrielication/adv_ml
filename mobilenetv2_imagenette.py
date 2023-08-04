@@ -147,6 +147,31 @@ def load_imagenette():
 
     return ds_train, ds_val, ds_test, ds_info
 
+def load_custom_imagenet(directory, img_height, img_width, batch_size):
+    # Generate the dataset
+    train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
+        directory,
+        validation_split=0.2,
+        subset="training",
+        seed=123,
+        image_size=(img_height, img_width),
+        batch_size=batch_size)
+
+    val_dataset = tf.keras.preprocessing.image_dataset_from_directory(
+        directory,
+        validation_split=0.2,
+        subset="validation",
+        seed=123,
+        image_size=(img_height, img_width),
+        batch_size=batch_size)
+
+    train_dataset = train_dataset.map(preprocess_img)
+    val_dataset = val_dataset.map(preprocess_img)
+
+    ds_train = train_dataset
+    ds_val = val_dataset
+
+    return ds_train, ds_val
 
 def evaluate_model_after_training(model, ds_test):
     print("\nEvaluating model...")
@@ -162,7 +187,9 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
 
     model = load_mobilenet_model(summary=summary, model_trainable=base_model_trainable)
 
-    ds_train, ds_val, ds_test, ds_info = load_imagenette()
+    # ds_train, ds_val, ds_test, ds_info = load_imagenette()
+
+    ds_train, ds_val = load_custom_imagenet("ds/", 224, 224, 128)
 
     # Create EarlyStopping callback
     early_stopping = EarlyStopping(

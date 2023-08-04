@@ -1,0 +1,10 @@
+tiger		292     0
+zebra		340     1
+gorilla		366     2
+gibbon		368     3
+canoe		472     4
+gondola		576     5
+hard-disk	592     6
+school-bus	779     7
+tramcar		829     8
+volcano		980     9
