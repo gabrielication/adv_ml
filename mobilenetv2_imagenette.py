@@ -1,4 +1,4 @@
-from util import *
+from utils.util import *
 
 from tensorflow.keras import layers, models, optimizers
 from tensorflow.keras.callbacks import EarlyStopping

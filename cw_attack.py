@@ -1,4 +1,4 @@
-from util import *
+from utils.util import *
 
 from fix_cw_l2 import carlini_wagner_l2
 
