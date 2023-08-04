@@ -94,6 +94,8 @@ def load_mobilenet_model(summary=False, include_top=False, weights="imagenet", m
 
 
 def load_imagenette():
+    print("loading Imagenette...")
+
     (ds_train, ds_val, ds_test), ds_info = tfds.load('imagenette/320px',
                                                      split=["train", "validation[80%:]", "validation[:80%]"],
                                                      shuffle_files=True, with_info=True,
@@ -148,6 +150,8 @@ def load_imagenette():
     return ds_train, ds_val, ds_test, ds_info
 
 def load_custom_imagenet(directory, img_height, img_width, batch_size):
+    print("loading custom imagenet...")
+
     # Generate the dataset
     train_dataset = tf.keras.preprocessing.image_dataset_from_directory(
         directory,
@@ -190,6 +194,7 @@ def fit_resnet_and_save_model(model_path_filename, history_path_filename, summar
     # ds_train, ds_val, ds_test, ds_info = load_imagenette()
 
     ds_train, ds_val = load_custom_imagenet("ds/", 224, 224, 128)
+    ds_test = None
 
     # Create EarlyStopping callback
     early_stopping = EarlyStopping(
@@ -222,7 +227,7 @@ if __name__ == "__main__":
 
     epochs = 100
 
-    gpu_id = 1
+    gpu_id = 0
 
     save_weights = False
 

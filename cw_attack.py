@@ -1,3 +1,4 @@
+import mobilenetv2_imagenette
 from utils.util import *
 
 from fix_cw_l2 import carlini_wagner_l2
@@ -90,29 +91,34 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename, batch_si
     global l2_norm_dict
     global linf_norm_dict
 
-    # model, history = load_model(model_path_filename, history_path_filename)
+    model, history = load_model(model_path_filename, history_path_filename)
 
-    model = tf.keras.applications.MobileNetV2(include_top=True, weights="imagenet", input_shape=(224, 224, 3))
+    # model = tf.keras.applications.MobileNetV2(include_top=True, weights="imagenet", input_shape=(224, 224, 3))
+
     model.trainable = False
 
     # Loading the imagenette dataset
-    ds, info = tfds.load('imagenette/320px', with_info=True, split='validation', as_supervised=True)
+    # ds, info = tfds.load('imagenette/320px', with_info=True, split='validation', as_supervised=True)
 
-    # Preprocess the dataset
-    ds = ds.map(
-        preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
+    ds_train, ds_val = mobilenetv2_imagenette.load_custom_imagenet("ds/", 224, 224, 16)
 
-    keysList = list(imagenette_labels.keys())
+    # # Preprocess the dataset
+    # ds = ds.map(
+    #     preprocess_img, num_parallel_calls=tf.data.AUTOTUNE).batch(batch_size)
 
-    for x, y in ds:
-        for target_class in keysList:
+    # keysList = list(imagenette_labels.keys())
+
+    for x, y in ds_val:
+        for target_class in range(0,10):
 
             ogl_target = y.numpy()
-            adv_target = target_class
+
+            # assuming y is your target class and X is your image batch
+            adv_target = np.full((x.shape[0],), target_class)
 
             print("CW attack in progress. Might take a while...")
             adv_img_batch = carlini_wagner_l2(model, x, clip_min=-1.0, clip_max=1.0, targeted=True,
-                                              y=target_one_hot_enc)
+                                              y=adv_target)
 
             for i in range(x.shape[0]):
                 ogl_img = x[i]
@@ -177,7 +183,7 @@ if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
 
     # Where to save/load the fitted model and its history file
-    model_path_filename = "../tf_saved_models/no_backup/mobilenetv2_imagenette_2023-07-31_16_57_19_444119"
+    model_path_filename = "tf_saved_models/mobilenetv2_imagenette_2023-08-04_14_53_15_488598"
     history_path_filename = "classification_history_model"
 
     gpu_id = 0

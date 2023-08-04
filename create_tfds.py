@@ -1,6 +1,7 @@
 import tensorflow as tf
 
 import mobilenetv2_imagenette
+import utils.util
 from utils.util import *
 
 # Replace with your directory path
@@ -41,9 +42,11 @@ val_dataset = val_dataset.map(mobilenetv2_imagenette.preprocess_img)
 model = tf.keras.applications.MobileNetV2(include_top=True, weights="imagenet")
 model.trainable = False
 
-# Compile the model
-model.compile(optimizer='adam',
-              loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-              metrics=['accuracy',tf.keras.metrics.SparseCategoricalAccuracy()])
+model, history = utils.util.load_model("tf_saved_models/mobilenetv2_imagenette_2023-08-04_14_53_15_488598", "classification_history_model")
+
+# # Compile the model
+# model.compile(optimizer='adam',
+#               loss=tf.keras.losses.SparseCategoricalCrossentropy(),
+#               metrics=['accuracy',tf.keras.metrics.SparseCategoricalAccuracy()])
 
 model.evaluate(val_dataset)
