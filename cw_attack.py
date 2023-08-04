@@ -248,7 +248,7 @@ if __name__ == "__main__":
     print('Tensorflow ', tf.__version__)
 
     # Where to save/load the fitted model and its history file
-    model_path_filename = "tf_saved_models/mobilenetv2_imagenette_2023-07-31_16_57_19_444119"
+    model_path_filename = "tf_saved_models/no_backup/mobilenetv2_imagenette_2023-07-31_16_57_19_444119"
     history_path_filename = "classification_history_model"
 
     gpu_id = 0

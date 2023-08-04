@@ -1,6 +1,6 @@
-from util import *
+from utils.util import *
 
-from tensorflow.keras.applications.resnet50 import ResNet50, decode_predictions, preprocess_input
+from tensorflow.keras.applications.resnet50 import ResNet50, preprocess_input
 from tensorflow.keras import layers, models, optimizers
 from tensorflow.keras.callbacks import EarlyStopping
 
