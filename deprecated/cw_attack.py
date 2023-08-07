@@ -204,14 +204,14 @@ def make_cw_targeted_attack(model_path_filename, history_path_filename, batch_si
                 these classes in order to the average later
                 '''
                 l0_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
-                l1_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
-                l2_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
-                linf_old_avg = l0_norm_dict[ogl_target[i]][target_class][0]
+                l1_old_avg = l1_norm_dict[ogl_target[i]][target_class][0]
+                l2_old_avg = l2_norm_dict[ogl_target[i]][target_class][0]
+                linf_old_avg = linf_norm_dict[ogl_target[i]][target_class][0]
 
                 l0_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
-                l1_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
-                l2_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
-                linf_old_count = l0_norm_dict[ogl_target[i]][target_class][1]
+                l1_old_count = l1_norm_dict[ogl_target[i]][target_class][1]
+                l2_old_count = l2_norm_dict[ogl_target[i]][target_class][1]
+                linf_old_count = linf_norm_dict[ogl_target[i]][target_class][1]
 
                 l0_new_avg = (l0_old_avg * l0_old_count + L0_norm) / (l0_old_count + 1)
                 l1_new_avg = (l1_old_avg * l1_old_count + L1_norm) / (l1_old_count + 1)

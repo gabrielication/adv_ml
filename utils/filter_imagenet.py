@@ -51,7 +51,7 @@ for key in dict_subimages:
 
     print(key)
 
-    path_src = "../ILSVRC2012_img_val/"
+    path_src = "../tf_saved_models/no_backup/ILSVRC2012_img_val/"
     path_des = "../ds/"+key
 
     os.makedirs(path_des, exist_ok=True)
