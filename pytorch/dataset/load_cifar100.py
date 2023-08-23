@@ -19,7 +19,7 @@ def train_dataloader(batch_size=256, num_workers=8):
                 T.Normalize(mean, std),
             ]
         )
-        dataset = CIFAR100(root=".", train=True, transform=transform)
+        dataset = CIFAR100(root=".", train=True, download=True, transform=transform)
         dataloader = DataLoader(
             dataset,
             batch_size=batch_size,
@@ -37,7 +37,7 @@ def val_dataloader(batch_size=256, num_workers=8):
                 T.Normalize(mean, std),
             ]
         )
-        dataset = CIFAR100(root=".", train=False, transform=transform)
+        dataset = CIFAR100(root=".", train=False, download=True, transform=transform)
         dataloader = DataLoader(
             dataset,
             batch_size=batch_size,
