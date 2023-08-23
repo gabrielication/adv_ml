@@ -1,6 +1,6 @@
 import torch
 
-from dataset.load_cifar100 import train_dataloader, val_dataloader, test_dataloader
+from load_cifar100 import train_dataloader, val_dataloader, test_dataloader
 from models.resnet import resnet18, resnet34, resnet50
 
 def set_gpu_device():
