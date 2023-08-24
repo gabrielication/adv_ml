@@ -8,7 +8,6 @@ from utils.utils import progress_bar
 import os
 
 best_acc = 0  # best test accuracy
-start_epoch = 0  # start from epoch 0 or last checkpoint epoch
 
 def set_gpu_device():
     
@@ -94,7 +93,7 @@ def test(epoch, model, test_loader, device, criterion, progress_bar):
         torch.save(state, './checkpoint/ckpt.pth')
         best_acc = acc
 
-def train_resnet_on_cifar100(batch_size=256, num_workers=8):
+def main_resnet_on_cifar100(batch_size=256, num_workers=8, start_epoch=0, epochs=100):
     dev = set_gpu_device()
     
     train_ds = train_dataloader(batch_size, num_workers)
@@ -109,11 +108,11 @@ def train_resnet_on_cifar100(batch_size=256, num_workers=8):
     
     optimizer, scheduler = configure_optimizers(model, train_ds)
     
-    for epoch in range(start_epoch, start_epoch+200):
+    for epoch in range(start_epoch, epochs):
         train(epoch, model, train_ds, dev, optimizer, criterion, progress_bar)
         test(epoch, model, test_ds, dev, criterion, progress_bar)
         scheduler.step()
 
 if __name__ == "__main__":
     
-    train_resnet_on_cifar100()
+    main_resnet_on_cifar100()
